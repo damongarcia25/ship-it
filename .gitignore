@@ -1,0 +1,4 @@
+# Screenshots from local review runs. Not part of the skill.
+review/
+.DS_Store
+node_modules/
