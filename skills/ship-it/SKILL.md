@@ -61,6 +61,16 @@ If there is no clear answer, or there are several, ask the user once: "What's th
 Also note the repo URL if there is one: `git remote get-url origin` (turn `git@github.com:a/b.git` into
 `https://github.com/a/b`). Leave it out if the repo is private or there is no remote.
 
+Look in the README for app store links too, including links behind store badges:
+
+- **App Store:** a link that starts with `https://apps.apple.com/`
+- **Google Play:** a link that starts with `https://play.google.com/`
+
+Use one of each at most, and only this project's own listing, not a link to another app, a dependency or an
+example. If it's not clear whether a listing is this project's, ask the user. Leave out any that aren't there:
+never guess or build one. They show as "App Store" and "Google Play" buttons next to the live link, and they don't
+replace the live URL.
+
 ## 4. Write the draft
 
 - **title**: the project's name, up to 80 characters.
@@ -94,6 +104,8 @@ Tagline:     ...
 Description: ...
 Live URL:    ...
 Repo URL:    ... (or "none")
+App Store:   ... (or "none")
+Google Play: ... (or "none")
 Tags:        ...
 Screenshot:  /path/to/screenshot.png
 Profile:     <profile_url from step 1>
@@ -114,17 +126,19 @@ sh "SKILL_DIR/scripts/publish.sh" \
   --description "..." \
   --live-url "..." \
   --repo-url "..." \
+  --app-store-url "https://apps.apple.com/..." \
+  --play-url "https://play.google.com/..." \
   --tags "tag one, tag two" \
   --screenshot "/path/to/screenshot.png"
 ```
 
-Leave out `--repo-url` when there is none. On success it prints the project's link on shippedby. Show the user
+Leave out `--repo-url`, `--app-store-url` and `--play-url` when there is none. On success it prints the project's link on shippedby. Show the user
 that link. If the answer says the link is hidden until the site is verified, pass that on too: the project shows
 on their profile right away, and the live link appears once they verify the site from their shippedby editor.
 
 If it fails, show the error it printed. What the codes mean:
 
-- 400: a field is missing or too long. Fix the field, show the draft again and ask before trying again.
+- 400: a field is missing, too long, or a store link isn't an `apps.apple.com` or `play.google.com` page. Fix the field, show the draft again and ask before trying again.
 - 401: the token is wrong or revoked. Go back to step 1.
 - 409: the profile has no handle yet, or already holds 12 projects.
 - 413 or 415: the screenshot is too big or is not a PNG, JPEG or WebP image.

@@ -2,7 +2,8 @@
 # Publishes one project with POST /api/v1/projects and prints its shippedby link.
 #
 #   sh publish.sh --title "..." --tagline "..." --description "..." --live-url "https://..." \
-#     [--repo-url "https://..."] [--tags "a, b"] --screenshot /path/to/image.png
+#     [--repo-url "https://..."] [--app-store-url "https://apps.apple.com/..."] \
+#     [--play-url "https://play.google.com/..."] [--tags "a, b"] --screenshot /path/to/image.png
 #
 # Text fields go as --form-string, so a value that starts with @ or < is sent as text, never read as a file.
 # The token goes to curl on stdin, so it never shows up in the process list.
@@ -11,7 +12,7 @@ set -eu
 BASE="${SHIPPEDBY_API_BASE:-https://shippedby.app}"
 BASE="${BASE%/}"
 
-title="" tagline="" description="" live_url="" repo_url="" tags="" screenshot=""
+title="" tagline="" description="" live_url="" repo_url="" app_store_url="" play_url="" tags="" screenshot=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --title) title="$2" ;;
@@ -19,6 +20,8 @@ while [ $# -gt 0 ]; do
     --description) description="$2" ;;
     --live-url) live_url="$2" ;;
     --repo-url) repo_url="$2" ;;
+    --app-store-url) app_store_url="$2" ;;
+    --play-url) play_url="$2" ;;
     --tags) tags="$2" ;;
     --screenshot) screenshot="$2" ;;
     *) echo "Unknown option: $1" >&2; exit 2 ;;
@@ -45,6 +48,8 @@ esac
 set -- --form-string "title=$title" --form-string "tagline=$tagline" --form-string "description=$description" \
   --form-string "live_url=$live_url" --form-string "tags=$tags" -F "screenshot=@$screenshot;type=$type"
 if [ -n "$repo_url" ]; then set -- "$@" --form-string "repo_url=$repo_url"; fi
+if [ -n "$app_store_url" ]; then set -- "$@" --form-string "app_store_url=$app_store_url"; fi
+if [ -n "$play_url" ]; then set -- "$@" --form-string "play_url=$play_url"; fi
 
 out=$(printf 'header = "Authorization: Bearer %s"\n' "$SHIPPEDBY_TOKEN" |
   curl -sS -K - --max-time 60 -w '\n%{http_code}' "$@" "$BASE/api/v1/projects") || {
